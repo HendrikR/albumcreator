@@ -11,18 +11,26 @@ fontlist = [
            ]
 
 require 'net/http'
-require 'RMagick'
+require 'rmagick'
 include Magick
+
+def get_response_with_redirect(uri)
+   r = Net::HTTP.get_response(uri)
+   if r.code == "301"
+     r = Net::HTTP.get_response(URI.parse(r.header['location']))
+   end
+   r
+end
 
 # Get artist name, album title and image
 good = false
 while not good
   good = true
-  artist = Net::HTTP.get_response(URI("http://en.wikipedia.org/wiki/Special:Random"))['location']
-  artist = artist["http://en.wikipedia.org/wiki/".length...artist.length]
+  artist = get_response_with_redirect(URI("http://en.wikipedia.org/wiki/Special:Random"))['location']
+  artist = artist.match("[^/]*$")[0]
   artist = artist.sub(/[,(].*$/, '').gsub(/_/, ' ',)
   if (artist.start_with?("List of ")) then good = false; end
-  if (artist[0].ord >= '0'.ord && artist[0].ord <= '9'.ord) then good = false; end
+  if artist.match(/^[0-9]/) then good = false; end
 end
 album = Net::HTTP.get(URI("http://www.quotationspage.com/random.php3"))
 album = album[album.rindex('<dt class="quote">')+18...album.rindex('</dt>')]
