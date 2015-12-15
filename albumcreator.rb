@@ -2,13 +2,19 @@
 # Die Idee stammt von [[http://www.lostfocus.de/archives/2008/01/22/time-in-your-life/][Dominik Schwinds Weblog]] aus dem Jahr 2008.
 
 
-# A list of fonts to choose from, with their relative sizes
-fontlist = [
-            'Swift',
-            'Junkyard',
-            'Penguin Attack',
-            'Domestic Manners',
-           ]
+# A list of fonts to choose from
+FONT_DIR = "fonts/"
+fontlist = Dir.new(FONT_DIR).select{|name| name.upcase.end_with?(".TTF")}
+fontlist.map!{|name| FONT_DIR + name}
+fontlist << "" if fontlist.empty? # choose the standard font if none available
+# You could also specify fonts from your system
+#fontlist = [
+#            'Humor-Sans-1.0.ttf',
+#            'Swift',
+#            'Junkyard',
+#            'Penguin Attack',
+#            'Domestic Manners',
+#           ]
 
 require 'net/http'
 require 'rmagick'
@@ -40,7 +46,7 @@ album = album[1..album.length-6]
 good = false
 while not good
   good = true
-  for word in ["It", "it", "is", "them", "of", "that", "than", "are", "were", "be", "can", "me", "or"]
+  for word in ["It", "it", "is", "them", "of", "that", "than", "are", "were", "be", "can", "me", "or", "to"]
     if album.start_with?(word+" ")
       album = album[(word.length()+1)..-1]
       good = false
@@ -102,7 +108,7 @@ def adjust_fontsize(text, font, maxwidth, minwidth=0)
   resize_step = ((MAX_FONTSIZE-MIN_FONTSIZE)/2)
   width = -1
   while (width < minwidth or width > maxwidth)
-    d.font_family = font;
+    d.font = font;
     d.pointsize = fontsize;
     cwidth = d.get_type_metrics(text).width
     #puts "fontsize #{fontsize} yields width #{cwidth}."
@@ -124,7 +130,7 @@ artistfontsize = adjust_fontsize(artist, artistfont, img2.columns * 0.9, img2.co
 
 d = Draw.new
 d.annotate(img2, 0,0,4,8, album) {
-    self.font_family = albumfont
+    self.font = albumfont
     self.fill = 'white'
     self.stroke = 'transparent'
     self.pointsize = albumfontsize
@@ -133,7 +139,7 @@ d.annotate(img2, 0,0,4,8, album) {
 }
 
 d.annotate(img2, 0,0,0,8, artist) {
-    self.font_family = artistfont
+    self.font = artistfont
     self.fill = 'white'
     self.stroke = 'white'
     self.pointsize = artistfontsize
