@@ -43,7 +43,6 @@ while not good
 end
 
 # Get album title
-# TODO: Why does this always give the same result?
 album = Net::HTTP.get(URI("http://www.quotationspage.com/random.php3"))
 #album = album[album.rindex('<dt class="quote">')+18...album.rindex('</dt>')]
 album = album.to_enum(:scan, /<dt class="quote"><a [^>]*>(.*)<\/a>\s*<\/dt>/).map{Regexp.last_match}.sample[1]
@@ -54,7 +53,7 @@ album = album[1..-2]
 good = false
 while not good
   good = true
-  for word in ["are", "can", "It", "it", "is", "me", "of", "or", "that", "than", "them", "to", "us", "were"]
+  for word in ["are", "and", "can", "It", "it", "is", "me", "of", "or", "that", "than", "them", "to", "us", "were"]
     if album.start_with?(word+" ")
       album = album[(word.length()+1)..-1]
       good = false
