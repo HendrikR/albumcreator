@@ -43,7 +43,7 @@ while not good
 end
 
 # Get album title
-album = Net::HTTP.get(URI("http://www.quotationspage.com/random.php3"))
+album = Net::HTTP.get(URI("http://www.quotationspage.com/random.php"))
 #album = album[album.rindex('<dt class="quote">')+18...album.rindex('</dt>')]
 album = album.to_enum(:scan, /<dt class="quote"><a [^>]*>(.*)<\/a>\s*<\/dt>/).map{Regexp.last_match}.sample[1]
 album = album.match(/( [^ ]*){4}\.$/)[0]
