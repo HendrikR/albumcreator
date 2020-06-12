@@ -94,22 +94,23 @@ img2 = Image.new(img_size, img_size) {
 img2[:comment] = comment
 
 # position the image in a rectangular frame
+composite_op = ReplaceCompositeOp
 if (img.rows > img.columns)
   # too slim images might be positioned on the left or right border, or in the middle
   rnd = rand()
   if    (rnd <= 0.4)     # Position image left
-    img2.composite!(img, 0, 0, AddCompositeOp)
+    img2.composite!(img, 0, 0, composite_op)
   elsif (rnd <= 0.8)     # Position image right
-    img2.composite!(img, img.rows-img.columns, 0, AddCompositeOp)
+    img2.composite!(img, img.rows-img.columns, 0, composite_op)
   else #(rnd <= 1.0)     # Position image centered
-    img2.composite!(img, (img.rows-img.columns)/2, 0, AddCompositeOp)
+    img2.composite!(img, (img.rows-img.columns)/2, 0, composite_op)
   end
 elsif (img.columns > img.rows)
   # too wide images are centered.
-  img2.composite!(img, 0, (img.columns-img.rows)/2, AddCompositeOp)
+  img2.composite!(img, 0, (img.columns-img.rows)/2, composite_op)
 else
   # for perfectly square images
-  img2.composite!(img, 0, 0, AddCompositeOp)
+  img2.composite!(img, 0, 0, composite_op)
 end
 
 MIN_FONTSIZE=8
