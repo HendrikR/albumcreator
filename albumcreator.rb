@@ -122,9 +122,9 @@ comment+= "Image used: "+ image_url
 # Prepare the image and add comments
 img = ImageList.new("image.jpg").cur_image
 img_size = [img.rows, img.columns].max
-img2 = Image.new(img_size, img_size) {
-  self.background_color = 'black'
-  self.comment = comment # Fixmenot: Does not work for some strange reason. Workaround below.
+img2 = Image.new(img_size, img_size) {|img|
+  img.background_color = 'black'
+  img.comment = comment # Fixmenot: Does not work for some strange reason. Workaround below.
 }
 img2[:comment] = comment
 
@@ -152,22 +152,22 @@ albumfontsize  = adjust_fontsize(album, albumfont, img2.columns * 0.9, img2.colu
 artistfontsize = adjust_fontsize(artist, artistfont, img2.columns * 0.9, img2.columns * 0.4)
 
 d = Draw.new
-d.annotate(img2, 0,0,0,8, artist) {
-    self.font = artistfont
-    self.fill = 'white'
-    self.stroke = 'white'
-    self.pointsize = artistfontsize
-    self.font_weight = BoldWeight
-    self.gravity = NorthEastGravity
+d.annotate(img2, 0,0,0,8, artist) {|img|
+  img.font = artistfont
+  img.fill = 'white'
+  img.stroke = 'white'
+  img.pointsize = artistfontsize
+  img.font_weight = BoldWeight
+  img.gravity = NorthEastGravity
 }
 
-d.annotate(img2, 0,0,4,8, album) {
-    self.font = albumfont
-    self.fill = 'white'
-    self.stroke = 'transparent'
-    self.pointsize = albumfontsize
-    self.font_weight = NormalWeight
-    self.gravity = SouthGravity
+d.annotate(img2, 0,0,4,8, album) {|img|
+  img.font = albumfont
+  img.fill = 'white'
+  img.stroke = 'transparent'
+  img.pointsize = albumfontsize
+  img.font_weight = NormalWeight
+  img.gravity = SouthGravity
 }
 
 img2.write("covers/#{artist}-#{album}.jpg")
