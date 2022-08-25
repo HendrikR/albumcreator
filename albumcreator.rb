@@ -1,24 +1,20 @@
 # -*- coding: utf-8 -*-
 # Die Idee stammt von [[http://www.lostfocus.de/archives/2008/01/22/time-in-your-life/][Dominik Schwinds Weblog]] aus dem Jahr 2008.
 
-
-# A list of fonts to choose from
-FONT_DIR = "fonts/"
-fontlist = Dir.new(FONT_DIR).select{|name| name.upcase.end_with?(".TTF")}
-fontlist.map!{|name| FONT_DIR + name}
-fontlist << "" if fontlist.empty? # choose the standard font if none available
-# You could also add fonts from your system
-#fontlist = [
-#            'Humor-Sans-1.0.ttf',
-#            'Swift',
-#            'Junkyard',
-#            'Penguin Attack',
-#            'Domestic Manners',
-#           ]
-
 require 'net/http'
 require 'rmagick'
 include Magick
+
+# A list of fonts to choose from
+FONT_DIRS = ["fonts", "/usr/share/fonts/*/**"]
+fontlist = []
+for fdir in FONT_DIRS
+  fontlist += Dir.glob(fdir).select{|name|
+    ext = File.extname(name)
+    [".ttf", ".otf"].member?(ext)
+  }
+end
+fontlist = [""] if fontlist.empty? # choose the standard font if none available
 
 def https_get(uri_string)
   uri = URI(uri_string)
