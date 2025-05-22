@@ -2,6 +2,7 @@
 # Die Idee stammt von [[http://www.lostfocus.de/archives/2008/01/22/time-in-your-life/][Dominik Schwinds Weblog]] aus dem Jahr 2008.
 
 require 'net/http'
+require 'open-uri'
 require 'rmagick'
 include Magick
 
@@ -16,19 +17,11 @@ for fdir in FONT_DIRS
 end
 fontlist = [""] if fontlist.empty? # choose the standard font if none available
 
-def https_get(uri_string)
-  uri = URI(uri_string)
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = true
-  # http.verify_mode = OpenSSL::SSL::VERIFY_NONE   # for sites with bad certificates
-  return http.request(Net::HTTP::Get.new(uri.request_uri))
-end
-
 def get_artist
   good = false
   while not good
     good = true
-    artist = https_get("https://en.wikipedia.org/wiki/Special:Random")['location']
+    artist = Net::HTTP.get_response(URI("https://en.wikipedia.org/wiki/Special:Random"))['location']
     artist = artist.match("[^/]*$")[0]
     artist = artist.sub(/[,(].*$/, '').gsub(/_/, ' ',)
     # I want neither "List of ..." ...
@@ -42,7 +35,7 @@ def get_artist
 end
 
 def get_album
-  album = Net::HTTP.get(URI("http://www.quotationspage.com/random.php"))
+  album = URI.open("https://www.quotationspage.com/random.php").read
   album = album.to_enum(:scan, /<dt class="quote"><a [^>]*>(.*)<\/a>\s*<\/dt>/).map{Regexp.last_match}.sample[1]
   album = album.match(/( [^ ]*){4}\.$/)[0]
   album = album[1..-2]
@@ -85,7 +78,7 @@ end
 
 def get_image_url
   # Find a nice image on flickr
-  image_url = https_get("https://www.flickr.com/explore/interesting/7days/").body
+  image_url = URI.open("https://www.flickr.com/explore/interesting/7days/").read
   image_url_idx = image_url.index('<a href="/photos/')
   image_url = image_url.match(/<a data-track="thumb".*<\/a>/)[0] # find the first image
   image_url = image_url.match(/img src=\"[^\"]*\"/)[0]           # locate the image URL
@@ -99,7 +92,7 @@ artist = get_artist
 album  = get_album
 puts "#{artist}: #{album}"
 image_url = get_image_url
-image = https_get(image_url).body
+image = URI.open(image_url).read
 File.new("image.jpg", "w").write(image)
 
 # Randomly choose some fonts
